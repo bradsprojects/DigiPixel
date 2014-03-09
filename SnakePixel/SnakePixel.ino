@@ -1,3 +1,5 @@
+//use left and right button to direct the snake to eat the red apple
+
 #include <DigiPixel.h>
 #include <avr/pgmspace.h>
 
@@ -6,10 +8,17 @@
 #define UP 2
 #define DOWN 3
 
+// leave the following line uncommented for use with a Digispark
+//DigiPixel digiPixel(3,0,5,2,1);  // LED Latch/Button Shift !load pin, LED/Button clock pin, LED Data Pin, LED Output Enable pin, Buttons data pin)
 
+// leave the following line uncommented for use with an Arduino
 DigiPixel digiPixel(5, 2, 6, 4, 3); // LED Latch/Button Shift !load pin, LED/Button clock pin, LED Data Pin, LED Output Enable pin, Buttons data pin)
 
-byte snakeX = 5;
+// Program memory arrays
+byte numberTable[30]PROGMEM = {0b01111110, 0b01000010, 0b01111110, 0b00100010, 0b01111110, 0b00000010, 0b01001110, 0b01001010, 0b01111010, 0b01000010, 0b01001010, 0b01111110, 0b01111000, 0b00001000, 0b01111110, 0b01111010, 0b01001010, 0b01001110, 0b01111110, 0b01001010, 0b01001110, 0b01000000, 0b01000000, 0b01111110, 0b01111110, 0b01001010, 0b01111110, 0b01111010, 0b01001010, 0b01111110};
+
+
+byte snakeX = 6;
 byte snakeY = 3;
 byte snakeColor = 2;
 byte snakeLength = 1;
@@ -19,8 +28,8 @@ byte snakeHistoryY[64];
 byte snakeDelay = 30;
 bool snakeMoved = false;
 
-byte appleX = 1;
-byte appleY = 1;
+byte appleX;
+byte appleY;
 byte appleColor = 1;
 bool gameRunning = true;
 
@@ -30,8 +39,14 @@ bool goLeft = false;
 void setup()
 {
   Serial.begin(9600);
+  randomSeed(analogRead(0));
+   
   clearHistory();
-
+  
+  appleX = random(0, 7);
+  appleY = random(0, 7);
+  
+  
 }
 
 void loop()
@@ -44,7 +59,7 @@ void loop()
   {
     Serial.println("Dead");
     showDeath();
-    
+
 
   } else
   {
@@ -202,7 +217,7 @@ bool checkSnakeDeath()
   {
     snakeAlive = false;
   }
-  
+
   for (byte i = 1; i < snakeLength; ++i)
   {
     if (snakeHistoryX[i] == snakeX && snakeHistoryY[i] == snakeY)
@@ -211,7 +226,7 @@ bool checkSnakeDeath()
       break;
     }
   }
-  
+
   return !snakeAlive;
 }
 
@@ -270,9 +285,10 @@ void showDeath()
 {
   snakeColor = 1;
 
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 3; i++)
   {
     saveGraphics();
+    
     for (int j = 0; j < 100; ++j)
     {
       digiPixel.drawScreen();
@@ -280,26 +296,40 @@ void showDeath()
 
 
 
+
     digiPixel.clearScreen();
     digiPixel.drawScreen();
+
+    int scoreTens = snakeLength / 10;
+    int scoreOnes = snakeLength - (scoreTens * 10);
+
+    for (int index = 0; index < 3; index++)
+    {
+      digiPixel.bufferBlue[index] = pgm_read_dword(&numberTable[index + (3 * scoreTens)]);
+      digiPixel.bufferBlue[index + 4] = pgm_read_dword(&numberTable[index + (3 * scoreOnes)]);
+    }
+    
+   for (int j = 0; j < 100; ++j)
+    {
+      digiPixel.drawScreen();
+    }
+    
     delay(500);
   }
-  
+
   //reset
-   snakeX = 3;
-   snakeY = 3;
-   snakeColor = 2;
-   snakeLength = 1;
-   snakeDirection = LEFT;
-   snakeDelay = 30;
-   snakeMoved = false;
+  snakeX = 6;
+  snakeY = 3;
+  snakeColor = 2;
+  snakeLength = 1;
+  snakeDirection = LEFT;
+  snakeDelay = 30;
+  snakeMoved = false;
 
-    appleX = random(0, 7);
-    appleY = random(0, 7);
-    gameRunning = true;
+  appleX = random(0, 7);
+  appleY = random(0, 7);
+  gameRunning = true;
 
-    clearHistory();
-  
-  
+  clearHistory();
 
 }
