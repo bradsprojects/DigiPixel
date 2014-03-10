@@ -21,7 +21,7 @@ const int birdMoveSpeed = 400; // bigger = slower
 long birdMoveUpdate; // millis() when bird moving (pipes and background) should be updated
 int score;
 boolean birdIsHovering = false;
-const int birdHoverDelayDefault = 20;
+const int birdHoverDelayDefault = 30;
 int birdHoverDelay = birdHoverDelayDefault;
 
 // pipe values (2 pipes)
