@@ -20,6 +20,9 @@ long birdFallUpdate; // millis() when bird falling should be updated
 const int birdMoveSpeed = 400; // bigger = slower 
 long birdMoveUpdate; // millis() when bird moving (pipes and background) should be updated
 int score;
+boolean birdIsHovering = false;
+const int birdHoverDelayDefault = 20;
+int birdHoverDelay = birdHoverDelayDefault;
 
 // pipe values (2 pipes)
 const byte numberOfPipes = 2;
@@ -83,12 +86,18 @@ void updateGame(){
     // move bird
     if (millis() > birdFallUpdate)
     {
-      birdFallUpdate = millis() + birdFallSpeed;
-      birdY = birdY - 1;
-      if ((birdY < 0) || (birdY > 200)) // game over if under screen
+      if (birdHoverDelay != 0)
       {
-        birdY = 0;
-        gameOver = true; 
+        birdHoverDelay--;
+      }
+        else{
+        birdFallUpdate = millis() + birdFallSpeed;
+        birdY = birdY - 1;
+        if ((birdY < 0) || (birdY > 200)) // game over if under screen
+        {
+          birdY = 0;
+          gameOver = true; 
+        }
       }
     }
 
@@ -96,8 +105,9 @@ void updateGame(){
     if (digiPixel.buttonAPressed == true){
       if (!buttonPressed)
       {
-        birdY = birdY + 2; 
+        birdY = birdY + 1; 
         buttonPressed = true;
+        birdHoverDelay = birdHoverDelayDefault;
       }
     }
     else
