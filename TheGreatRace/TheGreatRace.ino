@@ -20,7 +20,7 @@ byte Track2Barriers[128]PROGMEM={0b10000001, 0b10000001, 0b10000001, 0b10000001,
 
 
 // Constants
-#define SteeringSpeedSave 4
+#define SteeringSpeedSave 8 // only jumps 1 LED instead of 2 (easier to steer)
 #define ForwardSpeedSave 7
 #define TitleScreen 0
 #define PlayingGame 1
