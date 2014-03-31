@@ -1,0 +1,59 @@
+#######################################
+# Syntax Coloring Map For LiquidCrystal
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+DigiPixel	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+drawScreen	KEYWORD2
+clearScreen	KEYWORD2
+drawBox	KEYWORD2
+drawVerticalLine	KEYWORD2
+drawHorizontalLine	KEYWORD2
+fillScreen	KEYWORD2
+saveButtonStates	KEYWORD2
+setPixel	KEYWORD2
+getPixel	KEYWORD2
+rotateScreen	KEYWORD2
+invertColors	KEYWORD2
+checkBarrier 	KEYWORD2
+buttonUpPressed	KEYWORD2
+buttonDownPressed	KEYWORD2
+buttonLeftPressed	KEYWORD2
+buttonRightPressed	KEYWORD2
+buttonAPressed	KEYWORD2
+buttonBPressed	KEYWORD2
+airWrite	KEYWORD2
+
+bufferRed	KEYWORD2
+bufferGreen	KEYWORD2
+bufferBlue	KEYWORD2
+bufferBarriers	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+black	LITERAL1
+red	LITERAL1
+green	LITERAL1
+yellow	LITERAL1
+blue	LITERAL1
+cyan	LITERAL1
+magenta	LITERAL1
+white	LITERAL1
+blackbarrier	LITERAL1
+redbarrier	LITERAL1
+greenbarrier	LITERAL1
+yellowbarrier	LITERAL1
+bluebarrier	LITERAL1
+magentabarrier	LITERAL1
+cyanbarrier	LITERAL1
+whitebarrier	LITERAL1
