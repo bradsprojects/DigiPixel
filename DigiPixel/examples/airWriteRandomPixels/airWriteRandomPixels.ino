@@ -24,7 +24,7 @@ void loop(){
   digiPixel.bufferRed[0] = random(256);
   digiPixel.bufferGreen[0] = random(256);
   digiPixel.bufferBlue[0] = random(256); 
-  digiPixel.airWrite(1000);
+  digiPixel.airWrite(10); // the delay between drawing each line of data (in milliseconds)
 }
 
 

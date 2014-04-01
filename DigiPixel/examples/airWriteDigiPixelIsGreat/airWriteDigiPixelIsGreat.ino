@@ -25,7 +25,7 @@ void loop(){
     digiPixel.bufferBlue[0] = pgm_read_dword(&DigiPixelIsGreatBlue[x]);
     digiPixel.bufferRed[0] = pgm_read_dword(&DigiPixelIsGreatRed[x]);
     digiPixel.bufferGreen[0] = pgm_read_dword(&DigiPixelIsGreatGreen[x]);
-    digiPixel.airWrite(1000); // the delay between drawing each line of data (in microseconds)
+    digiPixel.airWrite(10); // the delay between drawing each line of data (in milliseconds)
   }
 }
 
