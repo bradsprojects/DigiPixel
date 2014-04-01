@@ -1,4 +1,4 @@
-# [DigiPixel](http://http://www.bradsprojects.com/the-digipixel/) - The DigiPixel
+# [DigiPixel](http://www.bradsprojects.com/the-digipixel/) - The DigiPixel
 
 The DigiPixel is an open source Arduino and Digispark compatible shield with a
 64 pixel RGB LED display and six buttons. The DigiPixel comes with it’s own
