@@ -21,10 +21,12 @@ void setup(){
 
 
 void loop(){
-  digiPixel.bufferRed[0] = random(256);
-  digiPixel.bufferGreen[0] = random(256);
-  digiPixel.bufferBlue[0] = random(256); 
-  digiPixel.airWrite(1000);
+  for (byte x = 0; x <= sizeof(DigiPixelIsGreatBlue); x++){
+    digiPixel.bufferBlue[0] = pgm_read_dword(&DigiPixelIsGreatBlue[x]);
+    digiPixel.bufferRed[0] = pgm_read_dword(&DigiPixelIsGreatRed[x]);
+    digiPixel.bufferGreen[0] = pgm_read_dword(&DigiPixelIsGreatGreen[x]);
+    digiPixel.airWrite(10); // the delay between drawing each line of data (in milliseconds)
+  }
 }
 
 
