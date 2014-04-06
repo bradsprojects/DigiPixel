@@ -1,6 +1,5 @@
 //Use left and right to move bar. Press B to restart after gameOver. 
-//Red dot when lose and Green when WIN :)
-//TODO: Add message for Win and lose
+//Red sad face when lose and Green Happy face when WIN :)
 //TODO: Add bonus to make bar bigger and smaller...
 //TODO: More Levels
 
@@ -231,9 +230,9 @@ void updateGraphics(){
   
 	if (gameOver){
 		if (gameWin){
-			digiPixel.setPixel(0,0,2);
+			drawHappyFace();
 		}else{
-			digiPixel.setPixel(0,0,1);			
+			drawSadFace();
 		}
 	}else{
 	//draw bar
@@ -254,6 +253,47 @@ void updateGraphics(){
 
 	}
 
+}
+
+void drawHappyFace(){
+	//  digiPixel.drawHorizontalLine(7,2,5,2);
+	// 	digiPixel.drawHorizontalLine(0,2,5,2);
+	// 	digiPixel.drawVerticalLine(0,2,5,2);
+	// 	digiPixel.drawVerticalLine(7,2,5,2);
+	// 	digiPixel.setPixel(1,1,2);
+	// 	digiPixel.setPixel(1,6,2);
+	// 	digiPixel.setPixel(6,1,2);
+	// 	digiPixel.setPixel(6,6,2);	
+	// 	digiPixel.setPixel(2,5,2);
+	// 	digiPixel.setPixel(5,5,2);
+	// 	digiPixel.setPixel(2,3,2);
+	// 	digiPixel.setPixel(5,3,2);
+	// 	digiPixel.setPixel(3,2,2);
+	// 	digiPixel.setPixel(4,2,2);
+	
+	digiPixel.drawHorizontalLine(7,1,6,2);
+	digiPixel.drawHorizontalLine(0,1,6,2);
+	digiPixel.drawVerticalLine(0,1,6,2);
+	digiPixel.drawVerticalLine(7,1,6,2);
+	digiPixel.setPixel(2,5,2);
+	digiPixel.setPixel(5,5,2);
+	digiPixel.setPixel(2,3,2);
+	digiPixel.setPixel(5,3,2);
+	digiPixel.setPixel(3,2,2);
+	digiPixel.setPixel(4,2,2);
+}
+
+void drawSadFace(){
+	digiPixel.drawHorizontalLine(7,1,6,1);
+	digiPixel.drawHorizontalLine(0,1,6,1);
+	digiPixel.drawVerticalLine(0,1,6,1);
+	digiPixel.drawVerticalLine(7,1,6,1);
+	digiPixel.setPixel(2,5,1);
+	digiPixel.setPixel(5,5,1);
+	digiPixel.setPixel(2,2,1);
+	digiPixel.setPixel(5,2,1);
+	digiPixel.setPixel(3,3,1);
+	digiPixel.setPixel(4,3,1);
 }
 
 void loop(){ 
