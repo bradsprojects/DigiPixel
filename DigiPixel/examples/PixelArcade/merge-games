@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+#
+# Script to merge in DigiPixel games into one ino file
+#
+# To rebuild the .ino file from the '.in' file, you can run:
+#   ./merge-games < PixelArcade.in > PixelArcade.ino
+#
+
+my @gamesArray;
+
+while (<>) {
+      if (/^#merge\s+(.*)\s*/) {
+	  push(@gamesArray, [ MergeGame($1) ]);
+      } elsif (/^#gamesarray.*/) {
+	  my $first = 0;
+	  foreach (@gamesArray) {
+	      print ",\n" if ($first++);
+	      printf '  {"%s", %s, %s}', @$_;
+	  }
+	  print "\n";
+      } else {
+	  print;
+      }
+}
+
+sub MergeGame {
+    my ($f) = shift;
+    $f =~ s/^(["'])(.*)(['"])$/$2/;
+
+    my $Game = $f;
+    $Game =~ s|.*/||;
+    $Game =~ s|.ino$||;
+
+    open(F, "<", $f) || warn "Failed to open($f): $!\n";
+
+    print "// --- Merged in $f ----------------------------\n";
+
+    while (<F>) {
+	s/void (loop|setup)\s*\(\)/void $1$Game\(\)/;
+	
+	s!#include <(DigiPixel.h|avr/pgmspace.h)>!!;
+
+	s|^DigiPixel |// $&|;
+
+	# Yes, this is icky, yes it would be better if any globals were namespaced,
+	# but this is just a hack, and it works for now, so stop complaining. ;)
+	s/(gameOver|updateGame|PlayerColor|wasPressed|goLeft|goRight|checkButtons|doRandomNumberCount|checkForButtonPress|saveGraphics|updateGraphics)/$1$Game/g;
+
+	print;
+    }
+    print "// --- END of Merge $f ----------------------------\n";
+
+    return ($Game, "&loop$Game", "&setup$Game");
+}	
