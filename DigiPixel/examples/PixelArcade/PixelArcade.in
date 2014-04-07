@@ -1,0 +1,132 @@
+
+/*
+ * PixelArcade - Provide a menu of games to play
+ *
+ * This is an example of how to import multiple games into a single image, 
+ * and provides a way to choose which game to play next.
+ * 
+ * Play:
+ *   Press Left/Right to choose a game
+ *   A to start the game of choice
+ *   Left and A at any point will bring you back to the "menu"
+ *
+ * Merging separate C programs in this manner is not ideal, but it works for the simple case.
+ * merge-games script takes care of the #merge tag below and also renames conflicting globals (ick, I know)
+ * 
+ * Todo:
+ * Add an alpha table to provide scrolling names
+ * Provide still shots of games?
+ */
+
+#include <DigiPixel.h>
+#include <avr/pgmspace.h>
+
+// leave the following line uncommented for use with a Digispark
+//DigiPixel digiPixel(3,0,5,2,1);  // LED Latch/Button Shift !load pin, LED/Button clock pin, LED Data Pin, LED Output Enable pin, Buttons data pin)
+
+// leave the following line uncommented for use with an Arduino
+DigiPixel digiPixel(5,2,6,4,3);  // LED Latch/Button Shift !load pin, LED/Button clock pin, LED Data Pin, LED Output Enable pin, Buttons data pin)
+
+
+/* #merge is handled by the merge-games perl script, the games are added in order listed below to the games[] array */
+
+#merge "../TheGreatRace/TheGreatRace.ino"
+#merge "../SnakePixel/SnakePixel.ino"
+#merge "../SuperPixelBros/SuperPixelBros.ino"
+#merge "../SpaceInvaders/SpaceInvaders.ino"
+#merge "../Connect4/Connect4.ino"
+#merge "../PixelBird/PixelBird.ino"
+#merge "../Dice2/Dice2.ino"
+
+// Program memory arrays
+byte numberTableArcade[30]PROGMEM={0b01111110, 0b01000010, 0b01111110, 0b00100010, 0b01111110, 0b00000010, 0b01001110, 0b01001010, 0b01111010, 0b01000010, 0b01001010, 0b01111110, 0b01111000, 0b00001000, 0b01111110, 0b01111010, 0b01001010, 0b01001110, 0b01111110, 0b01001010, 0b01001110, 0b01000000, 0b01000000, 0b01111110, 0b01111110, 0b01001010, 0b01111110, 0b01111010, 0b01001010, 0b01111110};
+
+// Variables
+byte playGame = 0;
+byte chooseGame = 1;
+
+typedef void (*FunctionCallback)();
+struct game {
+  char *title;
+  FunctionCallback loop;
+  FunctionCallback setup;
+};
+
+struct game games[] = {
+#gamesarray
+};
+byte maxGames = sizeof(games)/sizeof(game);
+boolean debounceButton = false;
+
+byte checkForGameToPlay() {
+  if (debounceButton == false) {
+    if (digiPixel.buttonRightPressed == true) {
+      debounceButton = true;
+      chooseGame++;
+      if (chooseGame > maxGames) {
+	chooseGame = 1;
+      }
+    } else if (digiPixel.buttonLeftPressed == true) {
+      debounceButton = true;
+      chooseGame--;
+      if (chooseGame == 0) {
+	chooseGame = maxGames;
+      }
+    } else if (digiPixel.buttonAPressed) {
+      if (chooseGame > 0) {
+	return(chooseGame);
+      }
+    }
+  } else {
+    if (! digiPixel.buttonRightPressed && ! digiPixel.buttonLeftPressed) {
+      debounceButton = false;
+    }
+  }
+
+  return(0);
+}
+
+void showGameCounter() {
+  digiPixel.clearScreen();
+  byte mSD = chooseGame / 10;
+  byte lSD = chooseGame % 10;
+  if (mSD != 0) {
+    for (byte index = 0; index <= 2; index++) {
+      digiPixel.bufferGreen[index] = pgm_read_dword(&numberTableArcade[(index) + (mSD * 3)]);
+    }
+  }
+  byte center = 4;
+  if (maxGames < 10) {
+    center = 3;
+  }
+  for (byte index = center; index <= center+2; index++) {
+     digiPixel.bufferGreen[index] = pgm_read_dword(&numberTableArcade[(index - center) + (lSD * 3)]);
+  }
+}
+
+void setup() {
+
+}
+
+void loop() {
+   if (playGame == 0) {
+     showGameCounter();                   
+     digiPixel.saveButtonStates();    
+     digiPixel.drawScreen();          
+
+     playGame = checkForGameToPlay();
+
+     if (playGame > 0) {
+	games[playGame-1].setup();
+     }
+   } else {
+     digiPixel.saveButtonStates();    
+     if (digiPixel.buttonLeftPressed && digiPixel.buttonAPressed) {
+       debounceButton = true;
+       // This may not let each game start off again properly, unless their setup functions did the right thing
+       playGame = 0;
+     } else {
+        games[playGame-1].loop();
+     }
+   }
+}
