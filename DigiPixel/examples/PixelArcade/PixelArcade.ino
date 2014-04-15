@@ -658,8 +658,8 @@ void saveGraphicsSuperPixelBros(){
 
 
 // --- END of Merge ../SuperPixelBros/SuperPixelBros.ino ----------------------------
-// --- Merged in ../SpaceInvaders/SpaceInvaders.ino ----------------------------
-//Use left and right to move bar. Press B to restart after gameOverSpaceInvaders. 
+// --- Merged in ../BreakoutPixel/BreakoutPixel.ino ----------------------------
+//Use left and right to move bar. Press B to restart after gameOverBreakoutPixel. 
 //Red sad face when lose and Green Happy face when WIN :)
 //TODO: Add bonus to make bar bigger and smaller...
 //TODO: More Levels
@@ -675,8 +675,8 @@ int barX=0;
 int barWidth = 3;
 int moveDelay = 10;
 bool barMoved = false;
-bool wasPressedSpaceInvaders = false;
-bool goLeftSpaceInvaders = false;
+bool wasPressedBreakoutPixel = false;
+bool goLeftBreakoutPixel = false;
 
 int ballDelay = 20;
 bool ballGoesUp = true;
@@ -687,10 +687,10 @@ bool ballHitted;
 
 int targets[3][8];
 
-bool gameOverSpaceInvaders = false;
+bool gameOverBreakoutPixel = false;
 bool gameWin = false;
 
-void setupSpaceInvaders(){
+void setupBreakoutPixel(){
 	restartGame();
 }
 
@@ -706,11 +706,11 @@ void restartGame(){
 			targets[i][j]=TARGETCOLOR;
 		}
 	}	
-	gameOverSpaceInvaders = false;
+	gameOverBreakoutPixel = false;
 	gameWin = false;
 }
 
-void updateGameSpaceInvaders(){
+void updateGameBreakoutPixel(){
 
 	moveBar();
 	moveBall();
@@ -724,7 +724,7 @@ void updateGameSpaceInvaders(){
 }
 
 void checkRestart(){
-	if (gameOverSpaceInvaders==true && digiPixel.buttonBPressed==true){
+	if (gameOverBreakoutPixel==true && digiPixel.buttonBPressed==true){
 		restartGame();
 	}
 }
@@ -809,7 +809,7 @@ void checkBarCollision(){
 
 void checkGameOver(){
 	if (ballY==0){
-		gameOverSpaceInvaders = true;
+		gameOverBreakoutPixel = true;
 		gameWin = false;
 	}
 }
@@ -822,7 +822,7 @@ void checkWin(){
 			}
 		}
 	}
-	gameOverSpaceInvaders = true;
+	gameOverBreakoutPixel = true;
 	gameWin = true;
 }
 
@@ -844,7 +844,7 @@ void moveBall(){
 	ballHitted=false;
 }
 
-void checkButtonsSpaceInvaders()
+void checkButtonsBreakoutPixel()
 {
 
   if ( !barMoved )
@@ -855,18 +855,18 @@ void checkButtonsSpaceInvaders()
 
   if (digiPixel.buttonLeftPressed == true)
   {
-    wasPressedSpaceInvaders = true;
-    goLeftSpaceInvaders = true;
+    wasPressedBreakoutPixel = true;
+    goLeftBreakoutPixel = true;
 
   } else if (digiPixel.buttonRightPressed == true)
   {
-    wasPressedSpaceInvaders = true;
-    goLeftSpaceInvaders = false;
+    wasPressedBreakoutPixel = true;
+    goLeftBreakoutPixel = false;
 
-  } else if (wasPressedSpaceInvaders)
+  } else if (wasPressedBreakoutPixel)
   {
     moveBar();
-    wasPressedSpaceInvaders = false;
+    wasPressedBreakoutPixel = false;
 
   }
 
@@ -886,10 +886,10 @@ void moveBar(){
 	}
 }
 
-void updateGraphicsSpaceInvaders(){
+void updateGraphicsBreakoutPixel(){
 	digiPixel.clearScreen();
   
-	if (gameOverSpaceInvaders){
+	if (gameOverBreakoutPixel){
 		if (gameWin){
 			drawHappyFace();
 		}else{
@@ -957,15 +957,15 @@ void drawSadFace(){
 	digiPixel.setPixel(4,3,1);
 }
 
-void loopSpaceInvaders(){ 
-  updateGameSpaceInvaders();
-  updateGraphicsSpaceInvaders();
+void loopBreakoutPixel(){ 
+  updateGameBreakoutPixel();
+  updateGraphicsBreakoutPixel();
 
   digiPixel.saveButtonStates();
   digiPixel.drawScreen();          
 }
 
-// --- END of Merge ../SpaceInvaders/SpaceInvaders.ino ----------------------------
+// --- END of Merge ../BreakoutPixel/BreakoutPixel.ino ----------------------------
 // --- Merged in ../Connect4/Connect4.ino ----------------------------
 // Game Notes:
 // use left and right buttons to move your piece, then press button A to drop. You can reset the game by pressing button B.
@@ -1657,7 +1657,7 @@ struct game games[] = {
   {"TheGreatRace", &loopTheGreatRace, &setupTheGreatRace},
   {"SnakePixel", &loopSnakePixel, &setupSnakePixel},
   {"SuperPixelBros", &loopSuperPixelBros, &setupSuperPixelBros},
-  {"SpaceInvaders", &loopSpaceInvaders, &setupSpaceInvaders},
+  {"BreakoutPixel", &loopBreakoutPixel, &setupBreakoutPixel},
   {"Connect4", &loopConnect4, &setupConnect4},
   {"PixelBird", &loopPixelBird, &setupPixelBird},
   {"Dice2", &loopDice2, &setupDice2}

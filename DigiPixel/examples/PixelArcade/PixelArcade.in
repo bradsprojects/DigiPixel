@@ -33,7 +33,7 @@ DigiPixel digiPixel(5,2,6,4,3);  // LED Latch/Button Shift !load pin, LED/Button
 #merge "../TheGreatRace/TheGreatRace.ino"
 #merge "../SnakePixel/SnakePixel.ino"
 #merge "../SuperPixelBros/SuperPixelBros.ino"
-#merge "../SpaceInvaders/SpaceInvaders.ino"
+#merge "../BreakoutPixel/BreakoutPixel.ino"
 #merge "../Connect4/Connect4.ino"
 #merge "../PixelBird/PixelBird.ino"
 #merge "../Dice2/Dice2.ino"
