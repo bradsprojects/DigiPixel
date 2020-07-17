@@ -1,0 +1,171 @@
+/*
+Cut Corners game for DigiPixel shield
+
+The idea is simple: the pixel moves from the upper left corner in a straight line
+until it either moves off the display or hits a previously lit pixel.  To turn the
+pixel the player can press the A button.  The pixel will turn 90 degrees right.  The
+line of lit pixels goes around and around in a tighter and tighter space until the
+player crashes out.  The score is the number of turns made, and the B button restarts
+the game.  Sounds dumb, but it's kind of addictive.
+
+2014-04-04 Harv Stewart
+
+*/
+
+// Leave the following lines uncommented for Arduino IDE 0022.  Comment them
+// out for IDE 1.0 or better.
+#define Arduino_h
+#include <WProgram.h>
+// End 0022 includes.
+
+#include <DigiPixel.h>
+#include <avr/pgmspace.h>
+
+// leave the following line uncommented for use with a Digispark
+//DigiPixel digiPixel(3,0,5,2,1);  // LED Latch/Button Shift !load pin, LED/Button clock pin, LED Data Pin, LED Output Enable pin, Buttons data pin)
+
+// leave the following line uncommented for use with an Arduino
+DigiPixel digiPixel(5,2,6,4,3);  // LED Latch/Button Shift !load pin, LED/Button clock pin, LED Data Pin, LED Output Enable pin, Buttons data pin)
+
+
+// Data for number display          0                                   1                                   2                                   3                                   4                                   5                                   6                                   7                                   8                                   9                                    
+byte numberTable[30]PROGMEM = {0b00111100, 0b01000010, 0b00111100, 0b00100010, 0b01111110, 0b00000010, 0b01001110, 0b01001010, 0b01111010, 0b01000100, 0b01010010, 0b00111100, 0b01111000, 0b00001000, 0b01111110, 0b01111010, 0b01001010, 0b01001110, 0b01111110, 0b01001010, 0b01001110, 0b01000000, 0b01000000, 0b01111110, 0b00111100, 0b01010010, 0b00111100, 0b01110010, 0b01001010, 0b01111110};
+
+int gameScore = 0;
+
+int rowOffset[4] = {0,-1,0,1};
+int colOffset[4] = {1,0,-1,0};
+int pixelDirection; // pixelDirection is an index into the offset arrays.
+
+int col;
+int row;
+
+const int pixelSpeed = 10;  // Change this value to make the pixel move slower (larger values) or faster (smaller values)
+
+// showScore() computes the tens and ones and shows them on the screen
+void showScore () {
+    digiPixel.clearScreen();
+    digiPixel.drawScreen();
+
+    int scoreTens = gameScore / 10;
+    int scoreOnes = gameScore - (scoreTens * 10);
+
+    for (int index = 0; index < 3; index++)
+    {
+      digiPixel.bufferBlue[index] = pgm_read_dword(&numberTable[index + (3 * scoreTens)]);
+      digiPixel.bufferBlue[index + 4] = pgm_read_dword(&numberTable[index + (3 * scoreOnes)]);
+      digiPixel.bufferRed[index] = pgm_read_dword(&numberTable[index + (3 * scoreTens)]);
+      digiPixel.bufferRed[index + 4] = pgm_read_dword(&numberTable[index + (3 * scoreOnes)]);
+      digiPixel.bufferGreen[index] = pgm_read_dword(&numberTable[index + (3 * scoreTens)]);
+      digiPixel.bufferGreen[index + 4] = pgm_read_dword(&numberTable[index + (3 * scoreOnes)]);
+    }
+}
+
+// buttonDebounce() waits for the A button to go unpressed.  We wait here until the player
+// releases it.  It just makes the game easier to manage
+void buttonDebounce() {
+  int stillDown = 1;
+  while (stillDown) {
+    // Refresh the screen so it appears seamless to the user
+    digiPixel.drawScreen();
+    // Get the button states...
+    digiPixel.saveButtonStates();
+    // ...and check if the A button is still down.
+    stillDown = digiPixel.buttonAPressed;
+  }
+}  
+
+// the doMove() routine is where most of the action takes place.  It basically does a 
+// "wait-for-time-or-A-button" loop.  If the button's pressed, the path turns right.
+// If the next pixel to be lit is out of bounds or has already been set previously,
+// 1 is returned to report the crash-out.  Otherwise 0 is returned to report all good.
+int doMove() {
+  int countDown;
+  int gotButton;
+  // Wait for several checks of the button, and time out if none pressed.  The drawScreen() function
+  // is required to keep the screen refreshed.
+  countDown = pixelSpeed;
+  gotButton = 0;
+  while (countDown > 0) {
+    digiPixel.drawScreen();
+    digiPixel.saveButtonStates();
+    if (digiPixel.buttonAPressed) {
+      countDown = 0;
+      gotButton = 1;
+      buttonDebounce();
+    } else {
+      countDown--;
+    }
+  }  
+
+  // After falling out of here we check if the button was pushed, and change direction
+  // if it was.
+  if (gotButton) {
+    gameScore++; // keep track of turns made
+    pixelDirection++;
+    if (pixelDirection > 3) {
+      pixelDirection = 0;
+    }
+  }
+  
+  // In any case, we move if possible, or crash out if not.
+  // First move the pointer
+  col+=colOffset[pixelDirection];
+  row+=rowOffset[pixelDirection];
+  
+  // Now check if we've hit a display wall and report it if so.
+  if (col < 0 || col > 7 || row < 0 || row > 7) {
+    return 1;
+  }
+  
+  // So far so good.  Have we hit a previously defined line?
+  // Crash out if so.
+  if ((digiPixel.getPixel(col, row)) != 0) {
+    return 1;
+  }
+
+  // Okay, we made it.  Set the new pixel and return 0 to show
+  // success.
+  digiPixel.setPixel(col, row, random(7)+1);
+}
+  
+// newGame() initializes things and sets the initial pixel on.
+void newGame () {
+  gameScore = 0;
+  pixelDirection = 0;
+  digiPixel.clearScreen();
+  col = 0;
+  row = 7;
+  digiPixel.setPixel(col, row, red);
+}
+
+// endGame() displays the score and waits for the B button
+// to be pressed to exit back to loop().
+void endGame () {
+  int waitingForPress;
+  digiPixel.clearScreen();
+  showScore();
+  waitingForPress = 1;
+  while (waitingForPress) {
+    digiPixel.drawScreen();
+    digiPixel.saveButtonStates();
+    waitingForPress = !digiPixel.buttonBPressed;
+  }
+}    
+  
+void playGame() {
+  while (doMove() == 0) {}
+  digiPixel.clearScreen();
+}
+
+void setup() {
+  randomSeed(random(255)); 
+}
+
+void loop() {
+  while (1) {
+    newGame();
+    playGame();
+    endGame();
+  }
+}
