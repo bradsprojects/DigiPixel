@@ -25,7 +25,7 @@ commit message as the description for the pull request.
 ## Using the DigiPixel Library
 
 The DigiPixel comes with a Arduino library that you can Import into your
-envionment.
+environment.
 
 You can download this repo straight away using the 
 [**Download ZIP**](https://github.com/bradsprojects/DigiPixel/archive/master.zip) 
